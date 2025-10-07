@@ -4,6 +4,7 @@ import { CheckCircleIcon, ArrowRightIcon } from '../../icons/Icons';
 
 interface Props {
   service: AvailableService;
+  onInquire: (service: AvailableService) => void;
 }
 
 const categoryStyles: Record<AvailableService['category'], { bg: string; text: string; }> = {
@@ -14,7 +15,7 @@ const categoryStyles: Record<AvailableService['category'], { bg: string; text: s
   'Audit': { bg: 'bg-indigo-50 dark:bg-indigo-900/30', text: 'text-indigo-600 dark:text-indigo-400' },
 };
 
-const ServiceOfferingCard: React.FC<Props> = ({ service }) => {
+const ServiceOfferingCard: React.FC<Props> = ({ service, onInquire }) => {
   const { bg, text } = categoryStyles[service.category];
 
   return (
@@ -40,7 +41,10 @@ const ServiceOfferingCard: React.FC<Props> = ({ service }) => {
                     <p className="text-xs text-text-secondary dark:text-gray-400">Starting from</p>
                     <p className="text-xl font-bold text-text-primary dark:text-gray-200">{service.price}</p>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors">
+                <button 
+                  onClick={() => onInquire(service)}
+                  className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors"
+                >
                     Inquire Now <ArrowRightIcon className="w-4 h-4" />
                 </button>
             </div>

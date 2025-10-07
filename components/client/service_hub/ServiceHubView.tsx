@@ -3,6 +3,7 @@ import { AvailableService, ServiceCategory } from '../../../types';
 import { mockAvailableServices } from './data';
 import ServiceOfferingCard from './ServiceOfferingCard';
 import { StoreIcon } from '../../icons/Icons';
+import InquiryModal from './InquiryModal';
 
 interface Props {
   searchQuery: string;
@@ -11,6 +12,19 @@ interface Props {
 const ServiceHubView: React.FC<Props> = ({ searchQuery }) => {
     const [services] = useState<AvailableService[]>(mockAvailableServices);
     const [categoryFilter, setCategoryFilter] = useState<ServiceCategory | 'All'>('All');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedService, setSelectedService] = useState<AvailableService | null>(null);
+
+    const handleInquire = (service: AvailableService) => {
+        setSelectedService(service);
+        setIsModalOpen(true);
+    };
+
+    const handleSendInquiry = (message: string) => {
+        alert(`Inquiry sent for "${selectedService?.name}":\n\n"${message}"\n\nOur team will get back to you shortly.`);
+        setIsModalOpen(false);
+        setSelectedService(null);
+    };
 
     const filteredServices = useMemo(() => {
         return services.filter(service => {
@@ -50,7 +64,7 @@ const ServiceHubView: React.FC<Props> = ({ searchQuery }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredServices.length > 0 ? (
                     filteredServices.map(service => (
-                        <ServiceOfferingCard key={service.id} service={service} />
+                        <ServiceOfferingCard key={service.id} service={service} onInquire={handleInquire} />
                     ))
                 ) : (
                     <div className="md:col-span-2 xl:col-span-3 text-center py-12 bg-white dark:bg-gray-800 rounded-xl shadow-md">
@@ -59,6 +73,13 @@ const ServiceHubView: React.FC<Props> = ({ searchQuery }) => {
                     </div>
                 )}
             </div>
+
+            <InquiryModal 
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleSendInquiry}
+                service={selectedService}
+            />
         </div>
     );
 };

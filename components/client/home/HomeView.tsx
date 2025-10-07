@@ -2,7 +2,7 @@ import React from 'react';
 import { ViewType } from '../../../App';
 import { mockEnrolledServices } from '../services/data'; // Using single source of truth
 import { mockRecentActivity } from './data';
-import { ServiceIcon, ClockIcon, DocumentIcon, ArrowRightIcon, ChatIcon, PlusIcon } from '../../icons/Icons';
+import { ServiceIcon, ClockIcon, DocumentIcon, ArrowRightIcon, ChatIcon, PlusIcon, StoreIcon, UploadIcon } from '../../icons/Icons';
 import { EnrolledService, RecentActivity } from '../../../types';
 
 const KPICard: React.FC<{ title: string; value: string; icon: React.ReactElement }> = ({ title, value, icon }) => (
@@ -16,6 +16,16 @@ const KPICard: React.FC<{ title: string; value: string; icon: React.ReactElement
     </div>
   </div>
 );
+
+const QuickActionCard: React.FC<{ title: string; icon: React.ReactElement; onClick: () => void; }> = ({ title, icon, onClick }) => (
+    <button onClick={onClick} className="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-center hover:bg-secondary dark:hover:bg-gray-700 hover:shadow-md transition-all">
+        <div className="p-3 rounded-full bg-white dark:bg-gray-800 text-primary mb-2 shadow">
+            {icon}
+        </div>
+        <p className="font-semibold text-sm text-text-primary dark:text-gray-200">{title}</p>
+    </button>
+);
+
 
 const ServiceStatusCard: React.FC<{ service: EnrolledService }> = ({ service }) => (
     <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
@@ -93,23 +103,33 @@ const HomeView: React.FC<HomeViewProps> = ({ setCurrentView }) => {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
-              <div className="flex justify-between items-center mb-4">
-                   <h3 className="text-lg font-semibold text-text-primary dark:text-gray-200">Your Active Services</h3>
-                   <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('enrolledServices'); }} className="text-sm font-medium text-primary hover:underline flex items-center gap-1">View All <ArrowRightIcon className="w-4 h-4" /></a>
+        <>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                 <h3 className="text-lg font-semibold text-text-primary dark:text-gray-200 mb-4">Quick Actions</h3>
+                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <QuickActionCard title="Apply for a New Service" icon={<StoreIcon />} onClick={() => setCurrentView('serviceHub')} />
+                    <QuickActionCard title="Consult an Expert" icon={<ChatIcon />} onClick={() => setCurrentView('consult')} />
+                    <QuickActionCard title="Upload a Document" icon={<UploadIcon />} onClick={() => setCurrentView('documents')} />
+                 </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                  <div className="flex justify-between items-center mb-4">
+                       <h3 className="text-lg font-semibold text-text-primary dark:text-gray-200">Your Active Services</h3>
+                       <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('enrolledServices'); }} className="text-sm font-medium text-primary hover:underline flex items-center gap-1">View All <ArrowRightIcon className="w-4 h-4" /></a>
+                  </div>
+                  <div className="space-y-4">
+                      {activeServices.length > 0 ? activeServices.slice(0, 2).map(service => <ServiceStatusCard key={service.id} service={service} />) : <p className="text-text-secondary dark:text-gray-400 text-center py-4">No currently active services.</p>}
+                  </div>
               </div>
-              <div className="space-y-4">
-                  {activeServices.length > 0 ? activeServices.slice(0, 3).map(service => <ServiceStatusCard key={service.id} service={service} />) : <p className="text-text-secondary dark:text-gray-400 text-center py-4">No currently active services.</p>}
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                  <h3 className="text-lg font-semibold text-text-primary dark:text-gray-200 mb-4">Recent Activity</h3>
+                  <div className="space-y-4">
+                      {mockRecentActivity.slice(0, 3).map(activity => <ActivityFeedItem key={activity.id} activity={activity} />)}
+                  </div>
               </div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
-              <h3 className="text-lg font-semibold text-text-primary dark:text-gray-200 mb-4">Recent Activity</h3>
-              <div className="space-y-4">
-                  {mockRecentActivity.slice(0, 4).map(activity => <ActivityFeedItem key={activity.id} activity={activity} />)}
-              </div>
-          </div>
-        </div>
+            </div>
+        </>
       )}
     </div>
   );
