@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Announcement, Department } from '../../types';
+// FIX: Added missing MegaphoneIcon import.
 import { MegaphoneIcon } from '../icons/Icons';
 
 interface Props {

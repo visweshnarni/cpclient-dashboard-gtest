@@ -1,7 +1,8 @@
 import React from 'react';
 import { ViewType } from '../../../App';
-import { mockEnrolledServices, mockRecentActivity } from './data';
-import { ServiceIcon, ClockIcon, DocumentIcon, ArrowRightIcon, ChatIcon } from '../../icons/Icons';
+import { mockEnrolledServices } from '../services/data'; // Using single source of truth
+import { mockRecentActivity } from './data';
+import { ServiceIcon, ClockIcon, DocumentIcon, ArrowRightIcon, ChatIcon, PlusIcon } from '../../icons/Icons';
 import { EnrolledService, RecentActivity } from '../../../types';
 
 const KPICard: React.FC<{ title: string; value: string; icon: React.ReactElement }> = ({ title, value, icon }) => (
@@ -61,8 +62,9 @@ interface HomeViewProps {
 }
 
 const HomeView: React.FC<HomeViewProps> = ({ setCurrentView }) => {
-  const activeServices = mockEnrolledServices.filter(s => s.status === 'Active' || s.status === 'Pending Action');
+  const totalServices = mockEnrolledServices.length;
   const pendingActions = mockEnrolledServices.filter(s => s.status === 'Pending Action').length;
+  const activeServices = mockEnrolledServices.filter(s => s.status === 'Active' || s.status === 'Pending Action');
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -72,28 +74,43 @@ const HomeView: React.FC<HomeViewProps> = ({ setCurrentView }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <KPICard title="Active Services" value={String(activeServices.length)} icon={<ServiceIcon />} />
+        <KPICard title="Total Enrolled Services" value={String(totalServices)} icon={<ServiceIcon />} />
         <KPICard title="Pending Actions" value={String(pendingActions)} icon={<ClockIcon />} />
         <KPICard title="Documents" value="12" icon={<DocumentIcon />} />
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
-            <div className="flex justify-between items-center mb-4">
-                 <h3 className="text-lg font-semibold text-text-primary dark:text-gray-200">Your Active Services</h3>
-                 <a href="#" onClick={() => setCurrentView('enrolledServices')} className="text-sm font-medium text-primary hover:underline flex items-center gap-1">View All <ArrowRightIcon className="w-4 h-4" /></a>
-            </div>
-            <div className="space-y-4">
-                {activeServices.slice(0, 3).map(service => <ServiceStatusCard key={service.id} service={service} />)}
-            </div>
+      
+      {totalServices === 0 ? (
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md text-center">
+          <ServiceIcon className="w-12 h-12 mx-auto text-primary" />
+          <h3 className="mt-4 text-xl font-bold text-text-primary dark:text-gray-200">You have no enrolled services</h3>
+          <p className="mt-2 text-text-secondary dark:text-gray-400">Get started by exploring our service catalog.</p>
+          <button 
+            onClick={() => setCurrentView('serviceHub')} 
+            className="mt-6 flex items-center justify-center gap-2 px-5 py-3 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors mx-auto"
+          >
+            <PlusIcon />
+            Apply for a Service
+          </button>
         </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
-            <h3 className="text-lg font-semibold text-text-primary dark:text-gray-200 mb-4">Recent Activity</h3>
-            <div className="space-y-4">
-                {mockRecentActivity.slice(0, 4).map(activity => <ActivityFeedItem key={activity.id} activity={activity} />)}
-            </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+              <div className="flex justify-between items-center mb-4">
+                   <h3 className="text-lg font-semibold text-text-primary dark:text-gray-200">Your Active Services</h3>
+                   <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('enrolledServices'); }} className="text-sm font-medium text-primary hover:underline flex items-center gap-1">View All <ArrowRightIcon className="w-4 h-4" /></a>
+              </div>
+              <div className="space-y-4">
+                  {activeServices.length > 0 ? activeServices.slice(0, 3).map(service => <ServiceStatusCard key={service.id} service={service} />) : <p className="text-text-secondary dark:text-gray-400 text-center py-4">No currently active services.</p>}
+              </div>
+          </div>
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+              <h3 className="text-lg font-semibold text-text-primary dark:text-gray-200 mb-4">Recent Activity</h3>
+              <div className="space-y-4">
+                  {mockRecentActivity.slice(0, 4).map(activity => <ActivityFeedItem key={activity.id} activity={activity} />)}
+              </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

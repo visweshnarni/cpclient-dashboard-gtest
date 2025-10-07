@@ -12,7 +12,7 @@ const viewTitles: Record<ViewType, string> = {
   documents: 'Documents',
   reports: 'Reports',
   consult: 'Consult an Expert',
-  settings: 'Settings',
+  profile: 'Profile',
 };
 
 // Mock Data
@@ -128,11 +128,8 @@ const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView, onMenuClic
                      <p className="text-xs text-text-secondary dark:text-gray-400 truncate">rishabh@acmecorp.com</p>
                   </div>
                   <div className="mt-2 space-y-1">
-                     <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('settings'); setIsProfileMenuOpen(false); }} className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                     <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('profile'); setIsProfileMenuOpen(false); }} className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                        <UserCircleIcon className="w-5 h-5 text-gray-500" /> My Profile
-                     </a>
-                     <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('settings'); setIsProfileMenuOpen(false); }} className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                       <SettingsIcon className="w-5 h-5 text-gray-500" /> Settings
                      </a>
                   </div>
                   <div className="mt-2 pt-2 border-t dark:border-gray-700">

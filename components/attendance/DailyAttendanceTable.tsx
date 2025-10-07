@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { AttendanceRecord, Employee } from '../../types';
+// FIX: Added missing EditIcon import.
 import { EditIcon } from '../icons/Icons';
 
 interface Props {

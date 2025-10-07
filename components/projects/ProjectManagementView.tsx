@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Project, Employee } from '../../types';
 import { mockProjects, mockEmployees } from './data';
+// FIX: Added missing icon imports
 import { PlusIcon, FilterIcon, ReportIcon, ProjectIcon, UsersIcon } from '../icons/Icons';
 import AddEditProjectModal from './AddEditProjectModal';
 import ProjectCard from './ProjectCard';

@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { Announcement, Department } from '../../types';
 import { mockAnnouncements } from './data';
+// FIX: Added missing MegaphoneIcon import.
 import { PlusIcon, MegaphoneIcon } from '../icons/Icons';
 import AddEditAnnouncementModal from './AddEditAnnouncementModal';
 import AnnouncementCard from './AnnouncementCard';

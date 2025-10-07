@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { PerformanceReview, Employee } from '../../types';
+// FIX: Added missing StarIcon import.
 import { XIcon, StarIcon } from '../icons/Icons';
 import StarRating from './StarRating';
 

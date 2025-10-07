@@ -3,6 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { Service, Employee, ServiceDocument } from '../../types';
 import { mockServices, mockServiceDocuments } from './data';
 import { mockEmployees } from '../projects/data';
+// FIX: Added missing icon imports
 import { PlusIcon, ServiceIcon, GavelIcon, RocketIcon, AuditIcon, ReceiptIcon, XIcon, DownloadIcon } from '../icons/Icons';
 import AddEditServiceModal from './AddEditServiceModal';
 import ServiceCard from './ServiceCard';

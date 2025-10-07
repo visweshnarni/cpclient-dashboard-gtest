@@ -2,7 +2,8 @@
 import React, { useState, useMemo } from 'react';
 import { Employee } from '../../types';
 import { mockEmployees } from './data';
-import { PlusIcon, UsersIcon, UserPlusIcon, LeaveIcon, DownloadIcon } from '../icons/Icons';
+// FIX: Added missing icon imports
+import { UsersIcon, UserPlusIcon, LeaveIcon, DownloadIcon } from '../icons/Icons';
 import KPICard from '../dashboard/KPICard';
 import EmployeeTable from './EmployeeTable';
 import EmployeeDetail from './EmployeeDetail';
@@ -138,7 +139,7 @@ const EmployeeManagementView: React.FC<Props> = ({ searchQuery }) => {
             <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label htmlFor="department" className="text-sm font-medium text-text-secondary dark:text-gray-400 block mb-1">Filter by Department</label>
+                        <label htmlFor="department" className="block text-sm font-medium text-text-secondary dark:text-gray-400 block mb-1">Filter by Department</label>
                         <select name="department" id="department" value={filters.department} onChange={handleFilterChange} className="w-full p-2 rounded-lg border bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
                             <option value="all">All</option>
                             <option value="IT">IT</option>
@@ -148,7 +149,7 @@ const EmployeeManagementView: React.FC<Props> = ({ searchQuery }) => {
                         </select>
                     </div>
                     <div>
-                        <label htmlFor="status" className="text-sm font-medium text-text-secondary dark:text-gray-400 block mb-1">Filter by Status</label>
+                        <label htmlFor="status" className="block text-sm font-medium text-text-secondary dark:text-gray-400 block mb-1">Filter by Status</label>
                         <select name="status" id="status" value={filters.status} onChange={handleFilterChange} className="w-full p-2 rounded-lg border bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
                             <option value="all">All</option>
                             <option value="Active">Active</option>

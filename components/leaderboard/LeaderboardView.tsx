@@ -5,6 +5,7 @@ import DepartmentLeaderboardTable from './DepartmentLeaderboardTable';
 import { mockEmployees, mockProjects } from '../projects/data';
 import { mockServices } from '../services/data';
 import { calculateDepartmentScores } from './data';
+// FIX: Added missing LeaderboardIcon import.
 import { LeaderboardIcon } from '../icons/Icons';
 
 const LeaderboardView: React.FC = () => {

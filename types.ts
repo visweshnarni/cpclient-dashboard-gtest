@@ -1,5 +1,4 @@
-// FIX: Added missing type definitions for the entire application.
-
+// Client Dashboard Types
 export type ServiceCategory = 'Tax' | 'GST' | 'Startup' | 'Legal' | 'Audit';
 export type ServiceStatus = 'Active' | 'Pending Action' | 'Completed' | 'On Hold';
 
@@ -38,6 +37,22 @@ export interface ClientDocument {
   url: string;
 }
 
+export interface RequiredDocument {
+  id: string;
+  name: string;
+  fullName: string;
+  status: 'Missing' | 'Uploaded' | 'Verified';
+  file?: { name: string; size: string };
+  description: string;
+}
+
+export interface SampleDocument {
+  id: string;
+  name: string;
+  url: string;
+  description: string;
+}
+
 export interface CalendarEvent {
   id: string;
   title: string;
@@ -69,71 +84,61 @@ export interface ClientNotification {
   link?: string;
 }
 
-// Admin Panel Types
+// FIX: Added extensive type definitions for the admin dashboard to resolve numerous import errors.
+// Admin Dashboard Types
 export type Department = 'IT' | 'Finance' | 'HR' | 'Marketing';
 export type ITSubDepartment = 'Web Development' | 'App Development' | 'Server Development';
 export type ProjectStatus = 'Active' | 'Pending' | 'Completed';
-export type Priority = 'High' | 'Medium' | 'Low';
-export type ProjectPriority = Priority;
-export type ServicePriority = Priority;
-export type EmployeeStatus = 'Active' | 'On Leave' | 'Terminated';
-export type AttendanceStatus = 'Present' | 'Absent' | 'Half-day' | 'On Leave' | 'Holiday';
-export type PerformanceStatus = 'Excellent' | 'Good' | 'Average' | 'Needs Improvement' | 'Pending Review';
-
-export interface Project {
-    id: string;
-    name: string;
-    department: Department;
-    subDepartment?: ITSubDepartment;
-    status: ProjectStatus;
-    priority: ProjectPriority;
-    progress: number;
-    description: string;
-    startDate: string; // YYYY-MM-DD
-    endDate: string; // YYYY-MM-DD
-    assignedEmployees: number[]; // Array of employee IDs
-}
+export type ProjectPriority = 'High' | 'Medium' | 'Low';
 
 export interface Employee {
-    id: number;
-    name: string;
-    position: string;
-    department: Department;
-    avatar: string;
-    performanceScore: number;
-    email: string;
-    phone: string;
-    joiningDate: string; // YYYY-MM-DD
-    dob: string; // YYYY-MM-DD
-    address: string;
-    status: EmployeeStatus;
+  id: number;
+  name: string;
+  position: string;
+  department: Department;
+  avatar: string;
+  email: string;
+  phone: string;
+  joiningDate: string; // YYYY-MM-DD
+  dob: string; // YYYY-MM-DD
+  address: string;
+  status: 'Active' | 'On Leave' | 'Terminated';
+  performanceScore?: number;
 }
 
-export interface EmployeeDocument {
-    id: string;
-    name: string;
-    type: string;
-    url: string;
-    size: string;
-    uploadDate: string; // YYYY-MM-DD
+export interface Project {
+  id: string;
+  name: string;
+  department: Department;
+  subDepartment?: ITSubDepartment;
+  status: ProjectStatus;
+  priority: ProjectPriority;
+  progress: number;
+  description: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
+  assignedEmployees: number[];
 }
+
+export type ServicePriority = 'High' | 'Medium' | 'Low';
+export type ServiceRequestStatus = 'New' | 'In Progress' | 'Completed' | 'On Hold';
 
 export interface Service {
-    id: string;
-    title: string;
-    clientName: string;
-    organization: string;
-    email: string;
-    phone: string;
-    category: ServiceCategory;
-    status: ServiceStatus;
-    priority: ServicePriority;
-    description: string;
-    progress: number;
-    assignedTeam: string;
-    assignedEmployeeIds: number[];
-    documents: number;
-    startDate: string; // YYYY-MM-DD
+  id: string;
+  title: string;
+  clientName: string;
+  organization: string;
+  email: string;
+  phone: string;
+  category: ServiceCategory;
+  status: ServiceRequestStatus;
+  priority: ServicePriority;
+  description: string;
+  progress: number;
+  assignedTeam: string;
+  assignedEmployeeIds: number[];
+  documents: number;
+  startDate: string; // YYYY-MM-DD
 }
 
 export interface ServiceDocument {
@@ -145,6 +150,17 @@ export interface ServiceDocument {
     uploadDate: string; // YYYY-MM-DD
 }
 
+export interface EmployeeDocument {
+    id: string;
+    name: string;
+    type: string;
+    url: string;
+    size: string;
+    uploadDate: string; // YYYY-MM-DD
+}
+
+export type AttendanceStatus = 'Present' | 'Absent' | 'Half-day' | 'On Leave' | 'Holiday';
+
 export interface AttendanceRecord {
     id: string;
     employeeId: number;
@@ -154,60 +170,53 @@ export interface AttendanceRecord {
     status: AttendanceStatus;
 }
 
+export type PerformanceStatus = 'Excellent' | 'Good' | 'Average' | 'Needs Improvement' | 'Pending Review';
+
 export interface PerformanceReview {
-    id: string;
-    employeeId: number;
-    reviewPeriod: string;
-    reviewDate: string; // YYYY-MM-DD
-    overallRating: number;
-    status: PerformanceStatus;
-    kpis: { name: string; rating: number; comment: string }[];
-    managerComments: string;
-    employeeComments: string;
-    improvementPlan?: string;
-    historicalData: { period: string; rating: number }[];
+  id: string;
+  employeeId: number;
+  reviewPeriod: string;
+  reviewDate: string; // YYYY-MM-DD
+  overallRating: number;
+  status: PerformanceStatus;
+  kpis: { name: string; rating: number; comment: string }[];
+  managerComments: string;
+  employeeComments: string;
+  improvementPlan?: string;
+  historicalData: { period: string; rating: number }[];
 }
 
 export interface Notification {
-    id: string;
-    type: 'announcement' | 'project' | 'service' | 'leave' | 'system';
-    message: string;
-    timestamp: string; // ISO String
-    read: boolean;
-    priority?: 'Urgent' | 'Normal';
+  id: string;
+  type: 'announcement' | 'project' | 'service' | 'leave' | 'system';
+  message: string;
+  timestamp: string; // ISO String
+  read: boolean;
+  priority?: 'Normal' | 'Urgent';
 }
 
 export interface Announcement {
-    id: string;
-    title: string;
-    content: string;
-    author: string;
-    authorPosition: string;
-    authorAvatar: string;
-    date: string; // ISO String
-    audience: 'Company-Wide' | Department;
-    priority: 'Normal' | 'Urgent';
-    imageUrl?: string;
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  authorPosition: string;
+  authorAvatar: string;
+  date: string; // ISO String
+  audience: 'Company-Wide' | Department;
+  priority: 'Normal' | 'Urgent';
+  imageUrl?: string;
 }
 
 export interface Email {
     id: string;
-    from: { name: string; email: string; avatar: string; };
-    to: { name: string; email: string; };
+    from: { name: string; email: string; avatar: string };
+    to: { name: string; email: string };
     subject: string;
     body: string;
-    timestamp: string; // ISO String
+    timestamp: string; // ISO string
     read: boolean;
     tag?: 'work' | 'important';
-}
-
-export interface AuditLog {
-    id: string;
-    timestamp: string; // ISO String
-    user: string;
-    userAvatar: string;
-    action: string;
-    details: string;
 }
 
 export interface PayrollRecord {
@@ -229,6 +238,15 @@ export interface ManualPayment {
     type: 'Bonus' | 'Reimbursement' | 'Advance' | 'Other';
     notes?: string;
     status: 'Paid' | 'Pending';
+}
+
+export interface AuditLog {
+    id: string;
+    timestamp: string; // ISO String
+    user: string;
+    userAvatar: string;
+    action: string;
+    details: string;
 }
 
 export interface DepartmentInfo {

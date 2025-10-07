@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { PerformanceReview, Employee } from '../../types';
+// FIX: Added missing ProjectIcon import.
 import { ProjectIcon, ServiceIcon } from '../icons/Icons';
 import StarRating from './StarRating';
 import PerformanceTrendChart from './PerformanceTrendChart';

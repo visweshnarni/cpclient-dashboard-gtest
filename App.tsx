@@ -7,9 +7,9 @@ import CalendarView from './components/client/calendar/CalendarView';
 import DocumentsView from './components/client/documents/DocumentsView';
 import ReportsView from './components/client/reports/ReportsView';
 import ConsultView from './components/client/consult/ConsultView';
-import SettingsView from './components/settings/SettingsView';
+import ProfileView from './components/client/profile/ProfileView';
 
-export type ViewType = 'home' | 'enrolledServices' | 'serviceHub' | 'calendar' | 'documents' | 'reports' | 'consult' | 'settings';
+export type ViewType = 'home' | 'enrolledServices' | 'serviceHub' | 'calendar' | 'documents' | 'reports' | 'consult' | 'profile';
 export type Theme = 'light' | 'dark' | 'system';
 
 const App: React.FC = () => {
@@ -43,7 +43,7 @@ const App: React.FC = () => {
       case 'home':
         return <HomeView setCurrentView={setCurrentView} />;
       case 'enrolledServices':
-        return <EnrolledServiceView searchQuery={searchQuery} />;
+        return <EnrolledServiceView searchQuery={searchQuery} setCurrentView={setCurrentView} />;
       case 'serviceHub':
         return <ServiceHubView searchQuery={searchQuery} />;
       case 'calendar':
@@ -54,8 +54,8 @@ const App: React.FC = () => {
         return <ReportsView />;
       case 'consult':
         return <ConsultView />;
-      case 'settings':
-        return <SettingsView />;
+      case 'profile':
+        return <ProfileView />;
       default:
         return <HomeView setCurrentView={setCurrentView} />;
     }

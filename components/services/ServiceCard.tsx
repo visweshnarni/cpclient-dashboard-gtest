@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Service, Employee } from '../../types';
-// FIX: Imported UsersIcon to be used in the component.
+// FIX: Added missing icon imports.
 import { EditIcon, TrashIcon, ServiceIcon, GavelIcon, RocketIcon, AuditIcon, ReceiptIcon, MailIcon, UsersIcon } from '../icons/Icons';
 
 interface Props {

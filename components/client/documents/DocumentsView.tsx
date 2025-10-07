@@ -1,118 +1,129 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { ClientDocument } from '../../../types';
-import { mockDocuments } from './data';
-import { DocumentIcon, UploadIcon, DownloadIcon } from '../../icons/Icons';
-import { mockEnrolledServices } from '../services/data';
+import { RequiredDocument } from '../../../types';
+import { initialRequiredDocs, sampleDocuments } from './data';
+import { DocumentIcon, UploadIcon, DownloadIcon, CheckCircleIcon, ClockIcon, InfoIcon, AadhaarIcon, PanIcon, BillIcon, PhotoIcon, SignatureIcon } from '../../icons/Icons';
 
-interface Props {
-  searchQuery: string;
-}
+const iconMap: Record<string, React.ReactElement> = {
+    'Aadhaar Card': <AadhaarIcon />,
+    'PAN Card': <PanIcon />,
+    'Voter ID / Driving License': <AadhaarIcon />,
+    'Electricity Bill / Mobile Bill': <BillIcon />,
+    'Bank Statement': <DocumentIcon />,
+    'Passport Size Photo': <PhotoIcon />,
+    'Digital Signature': <SignatureIcon />,
+    'No Objection Certificate (NOC)': <DocumentIcon />,
+};
 
-const DocumentsView: React.FC<Props> = ({ searchQuery }) => {
-    const [documents, setDocuments] = useState<ClientDocument[]>(mockDocuments);
-    const [serviceFilter, setServiceFilter] = useState<string>('All');
+const RequiredDocItem: React.FC<{ doc: RequiredDocument, onUpload: (id: string) => void }> = ({ doc, onUpload }) => {
+    const statusStyles = {
+        Missing: { bg: 'bg-red-50 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-300', icon: <ClockIcon className="w-5 h-5" /> },
+        Uploaded: { bg: 'bg-blue-50 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', icon: <UploadIcon className="w-5 h-5" /> },
+        Verified: { bg: 'bg-green-50 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-300', icon: <CheckCircleIcon className="w-5 h-5" /> },
+    };
+    const currentStatus = statusStyles[doc.status];
+
+    return (
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md border-l-4" style={{ borderColor: currentStatus.text.match(/#[0-9a-f]{3,6}|(red|blue|green|yellow)-\d{2,3}/)?.[0] || '#ccc' }}>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${currentStatus.bg} ${currentStatus.text}`}>
+                        {iconMap[doc.name] || <DocumentIcon />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="font-bold text-text-primary dark:text-gray-200 truncate" title={doc.fullName}>{doc.name}</p>
+                        <p className="text-xs text-text-secondary dark:text-gray-400">{doc.description}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                    <div className={`flex items-center gap-1.5 text-xs font-semibold ${currentStatus.text}`}>
+                        {currentStatus.icon} {doc.status}
+                    </div>
+                    {doc.status !== 'Verified' && (
+                        <button 
+                            onClick={() => onUpload(doc.id)} 
+                            className="px-3 py-1.5 text-sm font-semibold bg-primary text-white rounded-md hover:bg-blue-700 transition-colors flex-shrink-0"
+                        >
+                            {doc.status === 'Uploaded' ? 'Re-upload' : 'Upload'}
+                        </button>
+                    )}
+                </div>
+            </div>
+            {doc.status === 'Uploaded' && doc.file && (
+                 <div className="mt-3 pl-12 text-xs text-text-secondary dark:text-gray-400">
+                    Uploaded: <span className="font-medium text-text-primary dark:text-gray-300">{doc.file.name}</span> ({doc.file.size})
+                </div>
+            )}
+        </div>
+    );
+};
+
+const DocumentsView: React.FC<{ searchQuery: string }> = ({ searchQuery }) => {
+    const [requiredDocs, setRequiredDocs] = useState<RequiredDocument[]>(initialRequiredDocs);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const docToUploadRef = useRef<string | null>(null);
 
-    const filteredDocuments = useMemo(() => {
-        return documents.filter(doc => {
-            const serviceMatch = serviceFilter === 'All' || doc.serviceId === serviceFilter;
-            const searchMatch = searchQuery ? doc.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
-            return serviceMatch && searchMatch;
-        });
-    }, [documents, serviceFilter, searchQuery]);
+    const filteredDocs = useMemo(() => {
+        if (!searchQuery) return requiredDocs;
+        return requiredDocs.filter(doc => 
+            doc.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            doc.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [requiredDocs, searchQuery]);
 
-    const handleUploadClick = () => {
+    const handleUploadClick = (docId: string) => {
+        docToUploadRef.current = docId;
         fileInputRef.current?.click();
     };
     
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
-            alert(`Uploading "${file.name}"...`);
-            // Here you would handle the actual upload
-            const newDoc: ClientDocument = {
-                id: `doc-${Date.now()}`,
-                name: file.name,
-                serviceId: 'gst-001', // Example service
-                serviceName: 'Quarterly GST Filing',
-                type: 'Uploaded by You',
-                uploadDate: new Date().toISOString().split('T')[0],
-                size: `${(file.size / 1024).toFixed(1)} KB`,
-                url: '#',
-            };
-            setDocuments(prev => [newDoc, ...prev]);
+        const docId = docToUploadRef.current;
+        if (file && docId) {
+            setRequiredDocs(prevDocs => prevDocs.map(doc => 
+                doc.id === docId ? { 
+                    ...doc, 
+                    status: 'Uploaded', 
+                    file: { name: file.name, size: `${(file.size / 1024).toFixed(1)} KB` } 
+                } : doc
+            ));
         }
+        // Reset for next upload
+        if(fileInputRef.current) fileInputRef.current.value = '';
+        docToUploadRef.current = null;
     };
 
     return (
-        <div className="space-y-6 animate-fade-in">
-            <div className="flex flex-col md:flex-row justify-between md:items-center space-y-4 md:space-y-0">
-                <div>
-                    <h2 className="text-2xl lg:text-3xl font-bold text-text-primary dark:text-gray-200">Documents</h2>
-                    <p className="text-text-secondary dark:text-gray-400 mt-1">Manage all your shared and uploaded documents.</p>
-                </div>
-                 <button onClick={handleUploadClick} className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors">
-                    <UploadIcon />
-                    <span>Upload Document</span>
-                    <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
-                </button>
+        <div className="space-y-8 animate-fade-in">
+             <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
+            <div>
+                <h2 className="text-2xl lg:text-3xl font-bold text-text-primary dark:text-gray-200">Document Center</h2>
+                <p className="text-text-secondary dark:text-gray-400 mt-1">Upload required documents and download necessary forms.</p>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
-                <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium text-text-secondary dark:text-gray-400">Filter by Service:</label>
-                    <select
-                        value={serviceFilter}
-                        onChange={(e) => setServiceFilter(e.target.value)}
-                        className="p-2 rounded-lg border bg-white dark:bg-gray-700 dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
-                    >
-                        <option value="All">All Services</option>
-                        {mockEnrolledServices.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                    </select>
+            <div className="space-y-6">
+                <div>
+                    <h3 className="text-xl font-semibold text-text-primary dark:text-gray-200 mb-4">Required Documents Checklist</h3>
+                    <div className="space-y-4">
+                        {filteredDocs.map(doc => <RequiredDocItem key={doc.id} doc={doc} onUpload={handleUploadClick} />)}
+                    </div>
                 </div>
-            </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead className="text-xs text-gray-700 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-700">
-                            <tr>
-                                <th scope="col" className="px-6 py-3">Document Name</th>
-                                <th scope="col" className="px-6 py-3">Related Service</th>
-                                <th scope="col" className="px-6 py-3">Type</th>
-                                <th scope="col" className="px-6 py-3">Date</th>
-                                <th scope="col" className="px-6 py-3">Size</th>
-                                <th scope="col" className="px-6 py-3 text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredDocuments.map((doc) => (
-                                <tr key={doc.id} className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                                        <DocumentIcon className="w-5 h-5 text-primary" />
-                                        <span>{doc.name}</span>
-                                    </td>
-                                    <td className="px-6 py-4">{doc.serviceName}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${doc.type === 'Uploaded by You' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>{doc.type}</span>
-                                    </td>
-                                    <td className="px-6 py-4">{doc.uploadDate}</td>
-                                    <td className="px-6 py-4">{doc.size}</td>
-                                    <td className="px-6 py-4 text-center">
-                                        <a href={doc.url} download className="font-medium text-primary hover:underline flex items-center justify-center gap-1 mx-auto">
-                                            <DownloadIcon className="w-4 h-4" /> Download
-                                        </a>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                     {filteredDocuments.length === 0 && (
-                        <div className="text-center py-12">
-                            <h3 className="text-lg font-semibold text-text-primary dark:text-gray-200">No Documents Found</h3>
-                            <p className="text-text-secondary dark:text-gray-400 mt-1">Try adjusting your search or filter criteria.</p>
-                        </div>
-                    )}
+                <div>
+                    <h3 className="text-xl font-semibold text-text-primary dark:text-gray-200 mb-4">Downloadable Forms & Samples</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {sampleDocuments.map(doc => (
+                             <div key={doc.id} className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md flex items-center justify-between">
+                                 <div>
+                                    <p className="font-bold text-text-primary dark:text-gray-200">{doc.name}</p>
+                                    <p className="text-xs text-text-secondary dark:text-gray-400">{doc.description}</p>
+                                 </div>
+                                <a href={doc.url} download className="flex-shrink-0 ml-4 flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-sm font-semibold text-primary rounded-md hover:bg-gray-200 dark:hover:bg-gray-600">
+                                    <DownloadIcon />
+                                    Download
+                                </a>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

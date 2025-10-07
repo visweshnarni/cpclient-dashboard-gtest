@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Employee } from '../../types';
+// FIX: Added missing TrendingUpIcon import.
 import { TrendingUpIcon } from '../icons/Icons';
 
 interface Props {

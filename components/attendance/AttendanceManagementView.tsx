@@ -3,6 +3,7 @@ import { AttendanceRecord, Employee } from '../../types';
 import { mockAttendance } from './data';
 import { mockEmployees } from '../projects/data';
 import KPICard from '../dashboard/KPICard';
+// FIX: Added missing icon imports
 import { AttendanceIcon, UserPlusIcon, DownloadIcon, UsersIcon, LeaveIcon } from '../icons/Icons';
 import DailyAttendanceTable from './DailyAttendanceTable';
 import MonthlySummaryTable from './MonthlySummaryTable';

@@ -65,9 +65,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView, isOpen, 
           </ul>
         </nav>
         <div className="p-4 border-t border-gray-700">
-          <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('settings'); setIsOpen(false); }} className={`flex items-center p-3 rounded-lg text-gray-300 hover:bg-sidebar-hover hover:text-white transition-colors duration-200 ${currentView === 'settings' ? 'bg-primary text-white' : ''}`}>
+          <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('profile'); setIsOpen(false); }} className={`flex items-center p-3 rounded-lg text-gray-300 hover:bg-sidebar-hover hover:text-white transition-colors duration-200 ${currentView === 'profile' ? 'bg-primary text-white' : ''}`}>
             <SettingsIcon className="w-6 h-6" />
-            <span className="ml-3 text-sm font-medium">Settings</span>
+            <span className="ml-3 text-sm font-medium">Profile</span>
           </a>
         </div>
       </aside>

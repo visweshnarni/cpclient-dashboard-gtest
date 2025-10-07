@@ -5,7 +5,7 @@ import { mockEmployees } from '../projects/data';
 import { mockProjects } from '../projects/data';
 import { mockServices } from '../services/data';
 import KPICard from '../dashboard/KPICard';
-// FIX: Imported PlusIcon to resolve 'Cannot find name' error.
+// FIX: Imported missing icons.
 import { PerformanceIcon, StarIcon, TrendingUpIcon, UsersIcon, PlusIcon } from '../icons/Icons';
 import PerformanceCard from './PerformanceCard';
 import PerformanceDetailModal from './PerformanceDetailModal';

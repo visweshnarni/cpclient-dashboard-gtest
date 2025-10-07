@@ -1,5 +1,6 @@
 import React from 'react';
 import { Project, Employee } from '../../types';
+// FIX: Added missing EditIcon import.
 import { EditIcon, TrashIcon } from '../icons/Icons';
 
 interface Props {

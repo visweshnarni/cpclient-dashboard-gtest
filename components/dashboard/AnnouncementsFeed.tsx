@@ -1,5 +1,6 @@
 import React from 'react';
 import { mockAnnouncements } from '../announcements/data';
+// FIX: Added missing MegaphoneIcon import.
 import { MegaphoneIcon, ArrowRightIcon } from '../icons/Icons';
 
 const AnnouncementsFeed: React.FC = () => {
