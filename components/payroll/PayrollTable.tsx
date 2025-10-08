@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { PayrollRecord, Employee } from '../../types';
 import { ReportIcon } from '../icons/Icons';
@@ -15,7 +16,8 @@ const statusStyles = {
 };
 
 const PayrollTable: React.FC<Props> = ({ records, employees, onViewSlip }) => {
-  const employeeMap = new Map(employees.map(e => [e.id, e]));
+  // FIX: Explicitly typed the Map to ensure TypeScript correctly infers the type of 'employee' when retrieved.
+  const employeeMap: Map<number, Employee> = new Map(employees.map(e => [e.id, e]));
 
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden">

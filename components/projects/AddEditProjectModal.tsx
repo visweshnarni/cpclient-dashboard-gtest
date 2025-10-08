@@ -45,7 +45,8 @@ const AddEditProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project
   };
   
   const handleMultiSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedIds = Array.from(e.target.selectedOptions, option => Number(option.value));
+    // FIX: Cast option to HTMLOptionElement to access its 'value' property.
+    const selectedIds = Array.from(e.target.selectedOptions, option => Number((option as HTMLOptionElement).value));
     setProject(prev => ({...prev, assignedEmployees: selectedIds}));
   };
 

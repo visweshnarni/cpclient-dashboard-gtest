@@ -25,7 +25,8 @@ const statusStyles = {
 };
 
 const ManualPaymentsTable: React.FC<Props> = ({ payments, employees, onEdit, onDelete }) => {
-  const employeeMap = new Map(employees.map(e => [e.id, e]));
+  // FIX: Explicitly typed the Map to ensure TypeScript correctly infers the type of 'employee' when retrieved.
+  const employeeMap: Map<number, Employee> = new Map(employees.map(e => [e.id, e]));
   const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
 
   return (

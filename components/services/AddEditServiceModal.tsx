@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { Service, Employee, ServiceCategory, ServiceStatus, ProjectPriority } from '../../types';
 import { XIcon } from '../icons/Icons';
@@ -44,7 +45,8 @@ const AddEditServiceModal: React.FC<Props> = ({ isOpen, onClose, onSave, service
   };
   
   const handleMultiSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedIds = Array.from(e.target.selectedOptions, option => Number(option.value));
+    // FIX: Cast option to HTMLOptionElement to access its 'value' property.
+    const selectedIds = Array.from(e.target.selectedOptions, option => Number((option as HTMLOptionElement).value));
     setService(prev => ({...prev, assignedEmployeeIds: selectedIds}));
   };
 
