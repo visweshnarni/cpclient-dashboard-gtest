@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { MailIcon, LockClosedIcon, UserCircleIcon, PhoneIcon } from '../icons/Icons';
 
 interface LoginPageProps {
-    onLogin: () => void;
+    onLogin: (name?: string) => void;
 }
 
 const GoogleIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" }) => (
@@ -14,134 +14,271 @@ const GoogleIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" })
     </svg>
 );
 
-const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
-    const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
 
-    const handleSignup = (e: React.FormEvent) => {
-        e.preventDefault();
-        alert('Signup successful! Please log in.');
-        setActiveTab('login');
-    };
-
+const LoginForm: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
         onLogin();
     };
 
-    const handleGoogleSignIn = () => {
-        // In a real application, you would trigger the Google OAuth flow here.
-        alert('Redirecting to Google Sign-In...');
-        onLogin();
+    return (
+        <form onSubmit={handleLogin} className="space-y-6 animate-fade-in">
+            <div>
+                <label htmlFor="login-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+                <div className="mt-1 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <MailIcon className="w-5 h-5 text-gray-400" />
+                    </div>
+                    <input type="email" id="login-email" className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary" placeholder="you@example.com" required />
+                </div>
+            </div>
+            <div>
+                <div className="flex justify-between">
+                    <label htmlFor="login-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                    <a href="#" className="text-sm text-primary hover:underline">Forgot password?</a>
+                </div>
+                <div className="mt-1 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <LockClosedIcon className="w-5 h-5 text-gray-400" />
+                    </div>
+                    <input type="password" id="login-password" className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary" placeholder="••••••••" required />
+                </div>
+            </div>
+            <button type="submit" className="w-full py-3 px-4 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors">Login</button>
+        </form>
+    );
+};
+
+const SignupForm: React.FC<{ onSignup: (data: { name: string; email: string; phone: string }) => void }> = ({ onSignup }) => {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
+  
+    const handleSignup = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (password !== confirmPassword) {
+        setError("Passwords do not match.");
+        return;
+      }
+      const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+      if (!passwordRegex.test(password)) {
+        setError("Use 8+ characters with an uppercase letter, a number, and a special symbol.");
+        return;
+      }
+      setError('');
+      onSignup({ name, email, phone });
     };
 
     return (
-        <div className="min-h-screen bg-background dark:bg-gray-900 flex flex-col justify-center items-center p-4">
-            <div className="w-full max-w-md">
-                <div className="text-center mb-8">
-                     <h1 className="text-4xl font-bold text-primary">CorporateSaathi</h1>
-                     <p className="text-text-secondary dark:text-gray-400 mt-2">Your Partner in Corporate Compliance & Growth</p>
+        <form onSubmit={handleSignup} className="space-y-4 animate-fade-in">
+            <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
+                <div className="mt-1 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><UserCircleIcon className="w-5 h-5 text-gray-400" /></div>
+                    <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary" placeholder="John Doe" required />
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
-                    <div className="flex">
-                        <button 
-                            onClick={() => setActiveTab('login')}
-                            className={`w-1/2 p-4 font-semibold text-center transition-colors ${activeTab === 'login' ? 'bg-primary/10 text-primary border-b-2 border-primary' : 'text-text-secondary dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
-                        >
-                            Login
-                        </button>
-                        <button 
-                            onClick={() => setActiveTab('signup')}
-                            className={`w-1/2 p-4 font-semibold text-center transition-colors ${activeTab === 'signup' ? 'bg-primary/10 text-primary border-b-2 border-primary' : 'text-text-secondary dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
-                        >
-                            Sign Up
-                        </button>
-                    </div>
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+                <div className="mt-1 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><MailIcon className="w-5 h-5 text-gray-400" /></div>
+                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary" placeholder="you@example.com" required />
+                </div>
+            </div>
+             <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
+                <div className="mt-1 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><PhoneIcon className="w-5 h-5 text-gray-400" /></div>
+                    <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary" placeholder="+91 12345 67890" required />
+                </div>
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                <div className="mt-1 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><LockClosedIcon className="w-5 h-5 text-gray-400" /></div>
+                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary" placeholder="••••••••" required />
+                </div>
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm Password</label>
+                <div className="mt-1 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><LockClosedIcon className="w-5 h-5 text-gray-400" /></div>
+                    <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary" placeholder="••••••••" required />
+                </div>
+            </div>
+            {error && <p className="text-xs text-red-600 text-center">{error}</p>}
+            <button type="submit" className="w-full py-3 px-4 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors">Next →</button>
+        </form>
+    );
+};
 
-                    <div className="p-8">
-                        {activeTab === 'login' ? (
-                            <form onSubmit={handleLogin} className="space-y-6 animate-fade-in">
-                                <div>
-                                    <label htmlFor="login-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
-                                    <div className="mt-1 relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <MailIcon className="w-5 h-5 text-gray-400" />
-                                        </div>
-                                        <input type="email" id="login-email" className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary" placeholder="you@example.com" required />
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="flex justify-between">
-                                        <label htmlFor="login-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
-                                        <a href="#" className="text-sm text-primary hover:underline">Forgot password?</a>
-                                    </div>
-                                    <div className="mt-1 relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <LockClosedIcon className="w-5 h-5 text-gray-400" />
-                                        </div>
-                                        <input type="password" id="login-password" className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary" placeholder="••••••••" required />
-                                    </div>
-                                </div>
-                                <button type="submit" className="w-full py-3 px-4 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors">Login</button>
-                            </form>
-                        ) : (
-                            <form onSubmit={handleSignup} className="space-y-4 animate-fade-in">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
-                                    <div className="mt-1 relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <UserCircleIcon className="w-5 h-5 text-gray-400" />
-                                        </div>
-                                        <input type="text" className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary" placeholder="John Doe" required />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
-                                    <div className="mt-1 relative">
-                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <MailIcon className="w-5 h-5 text-gray-400" />
-                                        </div>
-                                        <input type="email" className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary" placeholder="you@example.com" required />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
-                                    <div className="mt-1 relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <PhoneIcon className="w-5 h-5 text-gray-400" />
-                                        </div>
-                                        <input type="tel" className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary" placeholder="+91 12345 67890" required />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
-                                    <div className="mt-1 relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <LockClosedIcon className="w-5 h-5 text-gray-400" />
-                                        </div>
-                                        <input type="password" className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary" placeholder="••••••••" required />
-                                    </div>
-                                </div>
-                                <button type="submit" className="w-full py-3 px-4 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors">Create Account</button>
-                            </form>
-                        )}
+const OtpForm: React.FC<{ contactInfo: { email: string; phone: string; }; onSubmit: () => void; onBack: () => void; }> = ({ contactInfo, onSubmit, onBack }) => {
+    const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
+    const [timer, setTimer] = useState(30);
+    const [error, setError] = useState('');
+    const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
-                        <div className="relative flex py-5 items-center">
-                            <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
-                            <span className="flex-shrink mx-4 text-sm text-text-secondary dark:text-gray-400">OR</span>
-                            <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+    useEffect(() => {
+        inputsRef.current[0]?.focus();
+    }, []);
+    
+    useEffect(() => {
+        if (timer > 0) {
+            const interval = setInterval(() => setTimer(timer - 1), 1000);
+            return () => clearInterval(interval);
+        }
+    }, [timer]);
+
+    const handleChange = (element: HTMLInputElement, index: number) => {
+        if (isNaN(Number(element.value))) return;
+        const newOtp = [...otp];
+        newOtp[index] = element.value.slice(-1);
+        setOtp(newOtp);
+        if (element.nextSibling && element.value) {
+            (element.nextSibling as HTMLInputElement).focus();
+        }
+    };
+  
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+        if (e.key === "Backspace" && !otp[index] && inputsRef.current[index - 1]) {
+            inputsRef.current[index - 1]?.focus();
+        }
+    };
+
+    const handleFormSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const enteredOtp = otp.join('');
+        // For demo purposes, any 6-digit code will work
+        if (enteredOtp.length === 6 && /^\d{6}$/.test(enteredOtp)) {
+            setError('');
+            onSubmit();
+        } else {
+            setError("Please enter a valid 6-digit OTP.");
+        }
+    };
+    
+    const handleResend = () => {
+        if (timer === 0) {
+            alert("A new OTP has been sent.");
+            setTimer(30);
+        }
+    };
+
+    return (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 md:p-10 animate-fade-in text-center">
+            <h2 className="text-2xl font-bold text-text-primary dark:text-white">Verify Your Account</h2>
+            <p className="mt-2 text-text-secondary dark:text-gray-400">
+                Enter the 6-digit code sent to your email ({contactInfo.email}) and phone.
+            </p>
+            <form onSubmit={handleFormSubmit}>
+                <div className="flex justify-center gap-2 md:gap-3 my-8">
+                    {otp.map((data, index) => (
+                        <input
+                            key={index}
+                            type="text"
+                            maxLength={1}
+                            value={data}
+                            // FIX: Corrected the callback ref function to have a 'void' return type, resolving the TypeScript error.
+                            ref={el => { inputsRef.current[index] = el; }}
+                            onChange={e => handleChange(e.target, index)}
+                            onKeyDown={e => handleKeyDown(e, index)}
+                            className="w-12 h-14 md:w-14 md:h-16 text-center text-2xl font-bold border border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                    ))}
+                </div>
+                 {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
+                <button type="submit" className="w-full py-3 px-4 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors">Verify & Continue</button>
+            </form>
+            <div className="mt-6 text-sm">
+                <p className="text-text-secondary dark:text-gray-400">
+                    Didn't receive the code?{' '}
+                    <button onClick={handleResend} disabled={timer > 0} className="font-semibold text-primary hover:underline disabled:text-gray-400 disabled:no-underline disabled:cursor-wait">
+                        {timer > 0 ? `Resend in ${timer}s` : 'Resend'}
+                    </button>
+                </p>
+                <button onClick={onBack} className="mt-2 font-semibold text-primary hover:underline">&larr; Back to Sign Up</button>
+            </div>
+        </div>
+    );
+};
+
+
+const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
+    const [authStep, setAuthStep] = useState<'login' | 'signup' | 'otp'>('login');
+    const [signupData, setSignupData] = useState({ name: '', email: '', phone: '' });
+
+    const handleSignupSubmit = (data: { name: string; email: string; phone: string }) => {
+        setSignupData(data);
+        setAuthStep('otp');
+    };
+
+    const handleOtpSubmit = () => {
+        // Here you would typically verify the OTP on the backend
+        // On success:
+        onLogin(signupData.name);
+    };
+
+    const handleGoogleSignIn = () => {
+        // This would trigger the Google OAuth flow
+        alert('Redirecting to Google Sign-In...');
+        onLogin('Google User');
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center items-center p-4">
+            <div className="w-full max-w-lg">
+                <div className="text-center mb-8">
+                     <h1 className="text-5xl font-bold text-primary">CorporateSaathi</h1>
+                     <p className="text-text-secondary dark:text-gray-400 mt-4 text-lg">Your Partner in Corporate Compliance & Growth</p>
+                </div>
+
+                {authStep === 'otp' ? (
+                    <OtpForm contactInfo={signupData} onSubmit={handleOtpSubmit} onBack={() => setAuthStep('signup')} />
+                ) : (
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+                        <div className="flex">
+                            <button 
+                                onClick={() => setAuthStep('login')}
+                                className={`w-1/2 p-4 font-semibold text-center transition-colors text-lg ${authStep === 'login' ? 'bg-primary/5 dark:bg-primary/20 text-primary border-b-2 border-primary' : 'text-text-secondary dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                            >
+                                Login
+                            </button>
+                            <button 
+                                onClick={() => setAuthStep('signup')}
+                                className={`w-1/2 p-4 font-semibold text-center transition-colors text-lg ${authStep === 'signup' ? 'bg-primary/5 dark:bg-primary/20 text-primary border-b-2 border-primary' : 'text-text-secondary dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                            >
+                                Sign Up
+                            </button>
                         </div>
 
-                        <button
-                            type="button"
-                            onClick={handleGoogleSignIn}
-                            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 bg-white dark:bg-gray-700 text-text-primary dark:text-gray-200 font-semibold rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
-                            aria-label="Sign in with Google"
-                        >
-                            <GoogleIcon />
-                            <span>Sign in with Google</span>
-                        </button>
+                        <div className="p-8 md:p-10">
+                            {authStep === 'login' ? (
+                                <LoginForm onLogin={() => onLogin()} />
+                            ) : (
+                                <SignupForm onSignup={handleSignupSubmit} />
+                            )}
+
+                            <div className="relative flex py-5 items-center">
+                                <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                                <span className="flex-shrink mx-4 text-sm text-text-secondary dark:text-gray-400">OR</span>
+                                <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={handleGoogleSignIn}
+                                className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white dark:bg-gray-700 text-text-primary dark:text-gray-200 font-semibold rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                                aria-label="Sign in with Google"
+                            >
+                                <GoogleIcon />
+                                <span>Sign in with Google</span>
+                            </button>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

@@ -33,9 +33,10 @@ interface HeaderProps {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   onLogout: () => void;
+  clientName: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView, onMenuClick, searchQuery, setSearchQuery, theme, setTheme, onLogout }) => {
+const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView, onMenuClick, searchQuery, setSearchQuery, theme, setTheme, onLogout, clientName }) => {
   const pageTitle = viewTitles[currentView] || 'Dashboard';
   const [notifications, setNotifications] = useState<ClientNotification[]>(mockClientNotifications);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -116,7 +117,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView, onMenuClic
           <button onClick={() => setIsProfileMenuOpen(prev => !prev)} className="flex items-center space-x-2 focus:outline-none p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
             <img className="h-10 w-10 rounded-full object-cover" src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Client avatar" />
             <div className="hidden lg:block text-left">
-              <div className="font-semibold text-sm text-text-primary dark:text-gray-200">Rishabh Patle</div>
+              <div className="font-semibold text-sm text-text-primary dark:text-gray-200">{clientName}</div>
               <div className="text-xs text-text-secondary dark:text-gray-400">Acme Corporation</div>
             </div>
             <ChevronDownIcon className="hidden lg:block w-4 h-4 text-gray-500" />
@@ -125,7 +126,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView, onMenuClic
            {isProfileMenuOpen && (
               <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border dark:border-gray-700 z-50 animate-fade-in-down py-2">
                   <div className="px-4 py-2 border-b dark:border-gray-700">
-                     <p className="font-semibold text-sm text-text-primary dark:text-gray-200">Rishabh Patle</p>
+                     <p className="font-semibold text-sm text-text-primary dark:text-gray-200">{clientName}</p>
                      <p className="text-xs text-text-secondary dark:text-gray-400 truncate">rishabh@acmecorp.com</p>
                   </div>
                   <div className="mt-2 space-y-1">
